@@ -54,6 +54,13 @@ public class MemberDAO {
 				String memberName = rs.getString("MEMBER_NM");
 				String memberGender = rs.getString("성별");
 				
+				Member member = new Member();
+				member.setMemberId(memberId);
+				member.setMemberName(memberName);
+				member.setMemberGender(memberGender);
+				
+				memberList.add(member);
+				
 				
 			}
 			
@@ -63,7 +70,36 @@ public class MemberDAO {
 			close(stmt);
 		}
 		
-		return null;
+		return memberList;
+	}
+
+
+	/** 회원정보 수정 DAO
+	 * @param conn
+	 * @param memberName
+	 * @param memberGender
+	 * @param memberNo
+	 * @return
+	 */
+	public int updateMember(Connection conn, String memberName, String memberGender, int memberNo) throws Exception{
+		
+		int result = 0;
+		
+		try {
+			
+			String sql = prop.getProperty("updateMember");
+			
+			pstmt.setString(1, memberName);
+			pstmt.setString(2, memberGender);
+			pstmt.setInt(3, memberNo);
+			
+			result = pstmt.executeUpdate();
+			
+		} finally {
+			close(pstmt);
+		}
+		
+		return result;
 	}
 
 }

@@ -38,7 +38,7 @@ public class MemberView {
 				switch(input) {
 				case 1 : selectMyInfo(); break;
 				case 2 : selectMemberList(); break;
-				case 3 : /*updateMember();*/ break;
+				case 3 : updateMember(); break;
 				case 4 : /*updatePassword();*/ break;
 				case 5 : break;
 				case 9 :
@@ -60,6 +60,50 @@ public class MemberView {
 	
 	
 	
+	/** 내 정보 수정
+	 * 
+	 */
+	private void updateMember() {
+		System.out.println("\n==== 내 정보 수정 ====\n");
+		
+		System.out.print("수정할 이름 : ");
+		
+		String memberName = sc.next();
+		
+		String memberGender = null;
+		while(true) {
+			System.out.println("수정할 성별(M/F) : ");
+			
+			memberGender = sc.next().toUpperCase();
+			
+			if(memberGender.equals("M") || memberGender.equals("F")) {
+				break;
+				
+			}
+			System.out.println("[M또는 F를 입력]");
+			
+		}
+	    try {
+	    	int result = service.updateMember(memberName, memberGender, Session.loginMember.getMemberNo());
+	    	
+	    	if(result >0 ) {
+	    		System.out.println("\n==수정되었습니다==\n");
+	    	} else {
+	    		System.out.println("\n==수정 실패==\n");
+	    	}
+			
+		} catch (Exception e) {
+			System.out.println("\n===내정보 수정중 예외 발생===\n");
+			e.printStackTrace();
+		}
+			
+		
+		
+	}
+
+
+
+
 	/** 회원 목록 조회
 	 * 
 	 */
@@ -70,6 +114,21 @@ public class MemberView {
 			// 회원 목록 조회 서비스 호출 후 결과 반환받기.
 			
 			List<Member> memberList = service.selectMemberList(); 
+			
+			if(memberList.isEmpty()) {
+				System.out.println("\n====조회 결과가 없습니다====\n");
+			} else {
+				
+				for(int i =0; i < memberList.size(); i++) {
+					
+					System.out.printf("%d/t/t%s/t/t%s/t/t%s \n",
+							i+1,
+							memberList.get(i).getMemberId(),
+							memberList.get(i).getMemberName(),
+							memberList.get(i).getMemberGender());
+				}
+			}
+			
 			
 			
 		} catch (Exception e) {
