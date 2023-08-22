@@ -102,4 +102,25 @@ public class MemberDAO {
 		return result;
 	}
 
+
+	public int updatePassworld(Connection conn, String current, String newPw1, int memberNo) throws Exception {
+		int result = 0;
+		
+		try {
+			String sql = prop.getProperty("updatePassworld");
+			
+			pstmt = conn.prepareStatement(sql);
+			pstmt.setString(1, newPw1);
+			pstmt.setString(2, current);
+			pstmt.setInt(3, memberNo);
+			
+			result = pstmt.executeUpdate();
+			
+			
+		} finally {
+			close(pstmt);
+		}
+		return 0;
+	}
+
 }

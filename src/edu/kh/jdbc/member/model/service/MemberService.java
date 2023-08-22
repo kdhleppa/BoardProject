@@ -32,14 +32,35 @@ public class MemberService {
 	 * @param memberGender
 	 * @param memberNo
 	 * @return
+	 * @throws Exception 
 	 */
-	public int updateMember(String memberName, String memberGender, int memberNo) {
+	public int updateMember(String memberName, String memberGender, int memberNo) throws Exception {
 		Connection conn = getConnection();
 		
 		int result = dao.updateMember(conn, memberName, memberGender, memberNo);
 		
 		// 트랜 잭션 처리
 		if(result > 0 ) commit(conn);
+		else			rollback(conn);
+		
+		close(conn);
+		
+		return result;
+	}
+
+	/**비밀번호 변경 서비스
+	 * @param current
+	 * @param newPw1
+	 * @param memberNo
+	 * @return
+	 * @throws Exception 
+	 */
+	public int updatePassword(String current, String newPw1, int memberNo) throws Exception {
+		Connection conn = getConnection();
+		
+		int result = dao.updatePassworld(conn, current, newPw1, memberNo);
+		
+		if(result > 0) commit(conn);
 		else			rollback(conn);
 		
 		close(conn);

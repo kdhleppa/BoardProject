@@ -39,7 +39,7 @@ public class MemberView {
 				case 1 : selectMyInfo(); break;
 				case 2 : selectMemberList(); break;
 				case 3 : updateMember(); break;
-				case 4 : /*updatePassword();*/ break;
+				case 4 : updatePassword(); break;
 				case 5 : break;
 				case 9 :
 					System.out.println("\n===메인메뉴로 돌아갑니다===\n");
@@ -60,6 +60,52 @@ public class MemberView {
 	
 	
 	
+	private void updatePassword() {
+		System.out.println("\n===비밀번호 변경 ====\n");
+		
+		System.out.println("현재 비밀번호 : ");
+		String current = sc.next();
+		
+		String newPw1 = null;
+		
+		while(true) {
+			//  새 비밀번호
+			System.out.print("새 비밀번호 : ");
+			newPw1=sc.next();
+			
+			// 새 비밀번호 확인
+			System.out.print("새 비밀번호 확인: ");
+			String newPw2=sc.next();
+			
+			// 같을 때 까지 무한반복
+			if(newPw1.equals(newPw2)) {
+				break;
+			}
+			
+			// 아닐때
+			System.out.println("\n**새 비밀번호가 일치하지 않습니다.**\n");
+		}
+		try {
+			//서비스 호출( 현재 비밀번호, 새 비밀번호, 로그인한 회원번호)
+			
+			int result = service.updatePassword(current, newPw1, Session.loginMember.getMemberNo());
+			// 성공하면 -> / 실패하면 -> 0
+			
+			if(result > 0) {
+				System.out.println("\n===비밀번호가 변경되었습니다===\n");
+			} else {
+				System.out.println("\n===현재 비밀번호가 일치하지 않습니다.===\n");
+			}
+		} catch (Exception e) {
+			System.out.println("\n==비밀번호 변경 중 예외 발생==\n");
+			e.printStackTrace();
+		}
+		
+	}
+
+
+
+
 	/** 내 정보 수정
 	 * 
 	 */
@@ -88,6 +134,11 @@ public class MemberView {
 	    	
 	    	if(result >0 ) {
 	    		System.out.println("\n==수정되었습니다==\n");
+	    		
+	    		//DB 와 Java프로그램 데이터 동기화 필요!!
+	    		Session.loginMember.setMemberName(memberName);
+	    		Session.loginMember.setMemberGender(memberGender);
+	    		
 	    	} else {
 	    		System.out.println("\n==수정 실패==\n");
 	    	}
