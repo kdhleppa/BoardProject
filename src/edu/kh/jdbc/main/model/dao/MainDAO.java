@@ -1,10 +1,13 @@
 package edu.kh.jdbc.main.model.dao;
-
+import static edu.kh.jdbc.common.JDBCTemplate.*;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.Statement;
+import java.util.InvalidPropertiesFormatException;
 import java.util.Properties;
 
 import edu.kh.jdbc.member.model.dto.Member;
@@ -27,10 +30,13 @@ public class MainDAO {
 		// DAO 객체가 생성될 때 XML 파일을 읽어와 Properties 객체에 저장
 		try {
 			prop = new Properties()	;
-			prop.loadFromXML( new FileInputStream("main-sql.xml));"
+			prop.loadFromXML(new FileInputStream("main-sql.xml"));
 			
 			// -> prop.getProperty("key") 호출
 					// --> value (SQL) 반환
+		} catch(Exception e) {
+			e.printStackTrace();
+			
 		}
 	}
 	/** 로그인 DAO (아이디, 비밀번호 일치 회원 조회
@@ -61,7 +67,7 @@ public class MainDAO {
 			
 			// placeholder에 알맞은값 대입
 			pstmt.setString(1, memberId);
-			pstmt.setString(2, memberPW);
+			pstmt.setString(2, memberPw);
 			
 			rs = pstmt.executeQuery(); // SELECT 수행 후 결과 반환 받기
 			
@@ -75,7 +81,7 @@ public class MainDAO {
 				
 				String memberName = rs.getString("MEMBER_NM");
 				String memberGender = rs.getString("MEMBER_GENDER");
-				String enrollDate = rs.getString("EBRIKK_DT");
+				String enrollDate = rs.getString("ENDROLL_DT");
 				
 				// member 객체 생성 후 값 세팅
 				member = new Member();
@@ -95,8 +101,69 @@ public class MainDAO {
 			close(pstmt);
 			
 		}
-		
+		// 5. 결과 반환
 		return member;
+	}
+	/** ID중복검사
+	 * @param conn
+	 * @param memberId
+	 * @return result
+	 * @throws Exception
+	 */
+	public int idDuplicationCheck(Connection conn, String memberId) throws Exception {
+		int result = 0;
+		try {
+			
+			String sql = prop.getProperty("idDuplicationCheck");
+			
+			pstmt = conn.prepareStatement(sql);
+			
+			pstmt.setString(1, memberId);
+			
+			rs = pstmt.executeQuery();
+			
+			if(rs.next()) {
+				result = rs.getInt(1);
+				
+			}
+			
+			
+		} finally {
+			close(rs);
+			close(pstmt);
+			
+		}
+		
+		return result;
+	}
+	/**회원가입 메소드
+	 * @param conn
+	 * @param member
+	 * @return result
+	 */
+	public int signUp(Connection conn, Member member) throws Exception{
+		
+		int result = 0;
+		try {
+			String sql = prop.getProperty("signUp");
+			
+			pstmt = conn.prepareStatement(sql);
+			
+			pstmt.setString(1, member.getMemberId());
+			pstmt.setString(2, member.getMemberPw());
+			pstmt.setString(3, member.getMemberName());
+			pstmt.setString(4, member.getMemberGender());
+			
+			result = pstmt.executeUpdate();
+			
+		} finally {
+			close(pstmt);
+		}
+		
+		
+		
+		
+		return result;
 	}
 
 }
